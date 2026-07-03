@@ -1,0 +1,939 @@
+{
+  "info": {
+    "name": "GymPro API - Updated",
+    "_postman_id": "gympro-updated-2026",
+    "description": "GymPro Microservices API \u2014 Gateway: localhost:8080\nAll requests go through API Gateway.\nSet adminToken / memberToken / trainerToken variables after login.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080",
+      "type": "string"
+    },
+    {
+      "key": "adminToken",
+      "value": "PASTE_ADMIN_JWT_HERE",
+      "type": "string"
+    },
+    {
+      "key": "memberToken",
+      "value": "PASTE_MEMBER_JWT_HERE",
+      "type": "string"
+    },
+    {
+      "key": "trainerToken",
+      "value": "PASTE_TRAINER_JWT_HERE",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "\ud83d\udd10 Auth Service (No Token Needed)",
+      "item": [
+        {
+          "name": "Register ADMIN",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/auth/register",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Admin User\",\n  \"email\": \"admin@gympro.com\",\n  \"password\": \"admin123\",\n  \"role\": \"ADMIN\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Register MEMBER",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/auth/register",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"John Doe\",\n  \"email\": \"john@gympro.com\",\n  \"password\": \"pass123\",\n  \"role\": \"MEMBER\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Register TRAINER",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/auth/register",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Jane Smith\",\n  \"email\": \"jane@gympro.com\",\n  \"password\": \"pass123\",\n  \"role\": \"TRAINER\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Login as ADMIN \u2192 copy token to adminToken variable",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/auth/login",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@gympro.com\",\n  \"password\": \"admin123\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Login as MEMBER \u2192 copy token to memberToken variable",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/auth/login",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"john@gympro.com\",\n  \"password\": \"pass123\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Login as TRAINER \u2192 copy token to trainerToken variable",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/auth/login",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"jane@gympro.com\",\n  \"password\": \"pass123\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Forgot Password (sends OTP to email)",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/auth/forgot-password",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"john@gympro.com\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Verify OTP",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/auth/verify-otp",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"john@gympro.com\",\n  \"otp\": \"123456\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Reset Password",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/auth/reset-password",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"john@gympro.com\",\n  \"otp\": \"123456\",\n  \"newPassword\": \"newpass123\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Auth Service Test (No Token)",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/auth/test",
+            "header": []
+          }
+        }
+      ]
+    },
+    {
+      "name": "\ud83d\udc64 Member Service (ADMIN Token)",
+      "item": [
+        {
+          "name": "Create Member Profile",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/members",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"John Doe\",\n  \"email\": \"john@gympro.com\",\n  \"phone\": \"9876543210\",\n  \"address\": \"123 Main St, Chennai\",\n  \"gender\": \"MALE\",\n  \"status\": \"ACTIVE\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Get All Members (Admin only)",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/members",
+            "header": [
+              {
+                "key": "X-User-Role",
+                "value": "ADMIN"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Get Member by ID",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/members/1",
+            "header": []
+          }
+        },
+        {
+          "name": "Get Member by Email",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/members/by-email/john@gympro.com",
+            "header": []
+          }
+        },
+        {
+          "name": "Update Member",
+          "request": {
+            "method": "PUT",
+            "url": "{{baseUrl}}/members/1",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"John Doe Updated\",\n  \"email\": \"john@gympro.com\",\n  \"phone\": \"9999999999\",\n  \"address\": \"456 New St, Bangalore\",\n  \"gender\": \"MALE\",\n  \"status\": \"ACTIVE\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Delete Member (Admin only)",
+          "request": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/members/1",
+            "header": [
+              {
+                "key": "X-User-Role",
+                "value": "ADMIN"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Member Service Test",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/members/test",
+            "header": []
+          }
+        }
+      ]
+    },
+    {
+      "name": "\ud83e\uddd1\u200d\ud83c\udfeb Trainer Service - Admin Endpoints (ADMIN Token)",
+      "item": [
+        {
+          "name": "Create Trainer (Admin only)",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/trainers",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-User-Role",
+                "value": "ADMIN"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Jane Smith\",\n  \"email\": \"jane@gympro.com\",\n  \"phone\": \"8888888888\",\n  \"specialization\": \"Yoga\",\n  \"experienceYears\": 5,\n  \"status\": \"ACTIVE\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Get All Trainers",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/trainers",
+            "header": []
+          }
+        },
+        {
+          "name": "Get Trainer by ID",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/trainers/1",
+            "header": []
+          }
+        },
+        {
+          "name": "Get Trainer by Email",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/trainers/by-email/jane@gympro.com",
+            "header": []
+          }
+        },
+        {
+          "name": "Get Trainers by Specialization",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/trainers/specialization/Yoga",
+            "header": []
+          }
+        },
+        {
+          "name": "Update Trainer",
+          "request": {
+            "method": "PUT",
+            "url": "{{baseUrl}}/trainers/1",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Jane Smith\",\n  \"email\": \"jane@gympro.com\",\n  \"phone\": \"7777777777\",\n  \"specialization\": \"Weight Loss\",\n  \"experienceYears\": 6,\n  \"status\": \"ACTIVE\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Delete Trainer (Admin only)",
+          "request": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/trainers/1",
+            "header": [
+              {
+                "key": "X-User-Role",
+                "value": "ADMIN"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Trainer Service Test",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/trainers/test",
+            "header": []
+          }
+        }
+      ]
+    },
+    {
+      "name": "\ud83e\uddd1\u200d\ud83c\udfeb Trainer Service - Schedule (TRAINER / ADMIN Token)",
+      "item": [
+        {
+          "name": "Add Schedule Slot (Trainer/Admin)",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/trainers/schedule",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-User-Role",
+                "value": "TRAINER"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"trainerId\": 1,\n  \"dayOfWeek\": \"MON\",\n  \"startTime\": \"09:00\",\n  \"endTime\": \"11:00\",\n  \"available\": true\n}"
+            }
+          }
+        },
+        {
+          "name": "Add Schedule Slot - Tuesday (Trainer/Admin)",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/trainers/schedule",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-User-Role",
+                "value": "TRAINER"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"trainerId\": 1,\n  \"dayOfWeek\": \"TUE\",\n  \"startTime\": \"14:00\",\n  \"endTime\": \"16:00\",\n  \"available\": true\n}"
+            }
+          }
+        },
+        {
+          "name": "Get Trainer Schedule",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/trainers/1/schedule",
+            "header": []
+          }
+        },
+        {
+          "name": "Get Available Slots",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/trainers/1/available-slots",
+            "header": []
+          }
+        },
+        {
+          "name": "Mark Slot as Booked",
+          "request": {
+            "method": "PUT",
+            "url": "{{baseUrl}}/trainers/schedule/1/book",
+            "header": []
+          }
+        },
+        {
+          "name": "Delete Schedule Slot (Trainer/Admin)",
+          "request": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/trainers/schedule/1",
+            "header": [
+              {
+                "key": "X-User-Role",
+                "value": "TRAINER"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "\ud83c\udfcb\ufe0f Plan Service - Admin Endpoints (ADMIN Token)",
+      "item": [
+        {
+          "name": "Create Monthly Plan (Admin only)",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/plans",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-User-Role",
+                "value": "ADMIN"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"planName\": \"Monthly Basic\",\n  \"description\": \"Access to gym for 30 days\",\n  \"durationType\": \"MONTHLY\",\n  \"price\": 999.0,\n  \"durationDays\": 30,\n  \"active\": true,\n  \"sessionsIncluded\": 4\n}"
+            }
+          }
+        },
+        {
+          "name": "Create Quarterly Plan (Admin only)",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/plans",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-User-Role",
+                "value": "ADMIN"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"planName\": \"Quarterly Standard\",\n  \"description\": \"Access to gym for 90 days\",\n  \"durationType\": \"QUARTERLY\",\n  \"price\": 2499.0,\n  \"durationDays\": 90,\n  \"active\": true,\n  \"sessionsIncluded\": 12\n}"
+            }
+          }
+        },
+        {
+          "name": "Create Yearly Plan (Admin only)",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/plans",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-User-Role",
+                "value": "ADMIN"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"planName\": \"Yearly Premium\",\n  \"description\": \"Full year access with unlimited sessions\",\n  \"durationType\": \"YEARLY\",\n  \"price\": 7999.0,\n  \"durationDays\": 365,\n  \"active\": true,\n  \"sessionsIncluded\": -1\n}"
+            }
+          }
+        },
+        {
+          "name": "Get All Active Plans",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/plans",
+            "header": []
+          }
+        },
+        {
+          "name": "Get Plan by ID",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/plans/1",
+            "header": []
+          }
+        },
+        {
+          "name": "Update Plan (Admin only)",
+          "request": {
+            "method": "PUT",
+            "url": "{{baseUrl}}/plans/1",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-User-Role",
+                "value": "ADMIN"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"planName\": \"Monthly Basic Updated\",\n  \"description\": \"Updated plan\",\n  \"durationType\": \"MONTHLY\",\n  \"price\": 1199.0,\n  \"durationDays\": 30,\n  \"active\": true,\n  \"sessionsIncluded\": 6\n}"
+            }
+          }
+        },
+        {
+          "name": "Deactivate Plan (Admin only)",
+          "request": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/plans/1",
+            "header": [
+              {
+                "key": "X-User-Role",
+                "value": "ADMIN"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Plan Service Test",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/plans/test",
+            "header": []
+          }
+        }
+      ]
+    },
+    {
+      "name": "\ud83c\udfcb\ufe0f Plan Service - Subscriptions (MEMBER Token)",
+      "item": [
+        {
+          "name": "Subscribe to Plan",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/plans/subscribe?memberId=1&memberEmail=john@gympro.com&planId=1",
+            "header": []
+          }
+        },
+        {
+          "name": "Get My Subscriptions",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/plans/my/1",
+            "header": []
+          }
+        },
+        {
+          "name": "Use Included Session (deducts 1 session from active sub)",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/plans/use-session/1",
+            "header": []
+          }
+        },
+        {
+          "name": "Cancel Subscription",
+          "request": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/plans/subscription/1",
+            "header": []
+          }
+        }
+      ]
+    },
+    {
+      "name": "\ud83d\udcc5 Booking Service - Member (MEMBER Token)",
+      "item": [
+        {
+          "name": "Create Booking",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/bookings/create",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"memberId\": 1,\n  \"memberEmail\": \"john@gympro.com\",\n  \"trainerId\": 1,\n  \"trainerEmail\": \"jane@gympro.com\",\n  \"scheduleId\": 1,\n  \"sessionDay\": \"MON\",\n  \"sessionTime\": \"09:00 - 11:00\",\n  \"notes\": \"Focus on cardio\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Get My Bookings (by Member ID)",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/bookings/member/1",
+            "header": []
+          }
+        },
+        {
+          "name": "Get Booking by ID",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/bookings/1",
+            "header": []
+          }
+        },
+        {
+          "name": "Cancel Booking",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/bookings/cancel/1",
+            "header": []
+          }
+        },
+        {
+          "name": "Booking Service Test",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/bookings/test",
+            "header": []
+          }
+        }
+      ]
+    },
+    {
+      "name": "\ud83d\udcc5 Booking Service - Trainer / Admin (TRAINER or ADMIN Token)",
+      "item": [
+        {
+          "name": "Get Bookings by Trainer ID",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/bookings/trainer/1",
+            "header": []
+          }
+        },
+        {
+          "name": "Complete Booking (Trainer/Admin)",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/bookings/complete/1",
+            "header": [
+              {
+                "key": "X-User-Role",
+                "value": "TRAINER"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "\ud83d\udcb3 Payment Service - Member (MEMBER Token)",
+      "item": [
+        {
+          "name": "Pay via UPI (Dummy)",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/payments/pay",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"memberId\": 1,\n  \"memberEmail\": \"john@gympro.com\",\n  \"bookingId\": 1,\n  \"amount\": 499.0,\n  \"paymentMethod\": \"UPI\",\n  \"description\": \"Booking #1 - Jane MON 09:00\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Pay via CASH (Dummy)",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/payments/pay",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"memberId\": 1,\n  \"memberEmail\": \"john@gympro.com\",\n  \"bookingId\": 2,\n  \"amount\": 499.0,\n  \"paymentMethod\": \"CASH\",\n  \"description\": \"Booking #2 - Jane TUE 14:00\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Pay via QR Code (Dummy)",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/payments/pay",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"memberId\": 1,\n  \"memberEmail\": \"john@gympro.com\",\n  \"subscriptionId\": 1,\n  \"amount\": 999.0,\n  \"paymentMethod\": \"QR_CODE\",\n  \"description\": \"Monthly Basic Plan\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Create Razorpay Order (Step 1)",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/payments/create-order?amount=999&description=Monthly%20Plan",
+            "header": []
+          }
+        },
+        {
+          "name": "Pay via Razorpay (Step 2 - use orderId from Step 1)",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/payments/pay",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"memberId\": 1,\n  \"memberEmail\": \"john@gympro.com\",\n  \"subscriptionId\": 1,\n  \"amount\": 999.0,\n  \"paymentMethod\": \"RAZORPAY\",\n  \"description\": \"Monthly Basic Plan\",\n  \"razorpayOrderId\": \"order_PASTE_FROM_STEP1\",\n  \"razorpayPaymentId\": \"pay_PASTE_FROM_RAZORPAY_CALLBACK\",\n  \"razorpaySignature\": \"PASTE_HMAC_SIGNATURE\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Get My Payments",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/payments/my/1",
+            "header": []
+          }
+        },
+        {
+          "name": "Get Payment by ID",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/payments/1",
+            "header": []
+          }
+        },
+        {
+          "name": "Get Payment by Transaction ID",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/payments/txn/TXN-ABCD1234",
+            "header": []
+          }
+        },
+        {
+          "name": "Get Payment by Booking ID",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/payments/booking/1",
+            "header": []
+          }
+        },
+        {
+          "name": "Payment Service Test",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/payments/test",
+            "header": []
+          }
+        }
+      ]
+    },
+    {
+      "name": "\ud83d\udcb3 Payment Service - Admin (ADMIN Token)",
+      "item": [
+        {
+          "name": "Get All Payments (Admin only)",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/payments/all",
+            "header": [
+              {
+                "key": "X-User-Role",
+                "value": "ADMIN"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Refund Payment (Admin only)",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/payments/refund/1",
+            "header": [
+              {
+                "key": "X-User-Role",
+                "value": "ADMIN"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "\ud83d\udce7 Notification Service (called internally \u2014 test via Admin Token)",
+      "item": [
+        {
+          "name": "Send Generic Email",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/notify/send?email=john@gympro.com&subject=Test%20Email&message=Hello%20from%20GymPro",
+            "header": []
+          }
+        },
+        {
+          "name": "Send Booking Confirmation to Member",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/notify/booking/member?to=john@gympro.com&bookingId=1&trainerName=Jane&day=MON&time=09:00-11:00",
+            "header": []
+          }
+        },
+        {
+          "name": "Send Booking Notification to Trainer",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/notify/booking/trainer?to=jane@gympro.com&bookingId=1&memberName=John&day=MON&time=09:00-11:00",
+            "header": []
+          }
+        },
+        {
+          "name": "Send Booking Cancellation Email",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/notify/booking/cancel?to=john@gympro.com&bookingId=1",
+            "header": []
+          }
+        },
+        {
+          "name": "Send Payment Receipt Email",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/notify/payment/receipt?to=john@gympro.com&amount=999&method=UPI&txnId=TXN-ABCD1234&description=Monthly%20Plan",
+            "header": []
+          }
+        },
+        {
+          "name": "Send Refund Email",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/notify/payment/refund?to=john@gympro.com&amount=999&txnId=TXN-ABCD1234",
+            "header": []
+          }
+        },
+        {
+          "name": "Send Plan Subscription Email",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/notify/plan/subscribed?to=john@gympro.com&planName=Monthly%20Basic&startDate=2026-05-04&endDate=2026-06-04",
+            "header": []
+          }
+        },
+        {
+          "name": "Send OTP Email",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/notify/otp?to=john@gympro.com&otp=123456",
+            "header": []
+          }
+        },
+        {
+          "name": "Notification Service Test",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/notify/test",
+            "header": []
+          }
+        }
+      ]
+    }
+  ]
+}

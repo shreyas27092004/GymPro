@@ -1,0 +1,467 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font-sans);color:var(--color-text-primary)}
+.wrap{padding:1rem 0}
+
+.tab-bar{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:1rem}
+.tab-btn{padding:6px 14px;font-size:12px;font-weight:500;border:0.5px solid var(--color-border-secondary);border-radius:20px;cursor:pointer;background:transparent;color:var(--color-text-secondary);transition:all .15s}
+.tab-btn:hover{background:var(--color-background-secondary)}
+.tab-btn.active{background:var(--color-background-info);color:var(--color-text-info);border-color:transparent}
+
+.panel{display:none}.panel.active{display:block}
+
+.svc-header{padding:.75rem 1rem;border-radius:var(--border-radius-lg);margin-bottom:.75rem;border:0.5px solid var(--color-border-tertiary)}
+.svc-title{font-size:15px;font-weight:500;margin-bottom:.2rem}
+.svc-sub{font-size:12px;color:var(--color-text-secondary)}
+
+.file-section{margin-bottom:.75rem}
+.file-label{font-size:11px;font-weight:500;color:var(--color-text-secondary);text-transform:uppercase;letter-spacing:.5px;margin-bottom:.4rem;padding:.3rem .6rem;background:var(--color-background-secondary);border-radius:var(--border-radius-md);display:inline-block}
+
+.explain-card{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);margin-bottom:.6rem;overflow:hidden}
+.explain-card-header{padding:.6rem 1rem;display:flex;align-items:center;gap:8px;cursor:pointer;user-select:none}
+.explain-card-header:hover{background:var(--color-background-secondary)}
+.expand-icon{font-size:11px;color:var(--color-text-tertiary);transition:transform .2s;flex-shrink:0}
+.explain-card.open .expand-icon{transform:rotate(90deg)}
+.explain-card-body{display:none;padding:.75rem 1rem;border-top:0.5px solid var(--color-border-tertiary)}
+.explain-card.open .explain-card-body{display:block}
+
+.annotation{display:inline-block;font-size:11px;font-weight:500;padding:1px 7px;border-radius:10px;margin:2px 3px 2px 0;vertical-align:middle}
+.ann-blue{background:var(--color-background-info);color:var(--color-text-info)}
+.ann-green{background:var(--color-background-success);color:var(--color-text-success)}
+.ann-amber{background:var(--color-background-warning);color:var(--color-text-warning)}
+.ann-red{background:var(--color-background-danger);color:var(--color-text-danger)}
+.ann-gray{background:var(--color-background-secondary);color:var(--color-text-secondary);border:0.5px solid var(--color-border-tertiary)}
+
+.code{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:.5rem .75rem;font-family:var(--font-mono);font-size:11.5px;color:var(--color-text-primary);margin:.4rem 0;display:block;white-space:pre-wrap;line-height:1.6}
+.q{font-size:13px;font-weight:500;color:var(--color-text-primary);margin-bottom:.3rem}
+.a{font-size:13px;color:var(--color-text-secondary);line-height:1.7;margin-bottom:.4rem}
+.a b{color:var(--color-text-primary);font-weight:500}
+
+.row-item{display:flex;gap:8px;padding:.4rem 0;border-bottom:0.5px solid var(--color-border-tertiary);align-items:flex-start;font-size:13px}
+.row-item:last-child{border-bottom:none}
+.row-key{font-family:var(--font-mono);font-size:11.5px;color:var(--color-text-info);min-width:140px;flex-shrink:0;margin-top:2px}
+.row-val{color:var(--color-text-secondary);line-height:1.6}
+.row-val b{color:var(--color-text-primary);font-weight:500}
+
+.flow-box{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:.5rem .75rem;font-size:12px;color:var(--color-text-secondary);margin:.3rem 0;border-left:3px solid var(--color-border-info)}
+.flow-arrow{text-align:center;font-size:11px;color:var(--color-text-tertiary);margin:.1rem 0}
+</style>
+
+<div class="wrap">
+<div class="tab-bar">
+  <button class="tab-btn active" onclick="show('overview')">Overview</button>
+  <button class="tab-btn" onclick="show('auth')">auth-service</button>
+  <button class="tab-btn" onclick="show('gateway')">gateway-service</button>
+  <button class="tab-btn" onclick="show('member')">member-service</button>
+  <button class="tab-btn" onclick="show('trainer')">trainer-service</button>
+  <button class="tab-btn" onclick="show('plan')">plan-service</button>
+  <button class="tab-btn" onclick="show('booking')">booking-service</button>
+  <button class="tab-btn" onclick="show('notification')">notification-service</button>
+  <button class="tab-btn" onclick="show('annotations')">Annotations cheatsheet</button>
+</div>
+
+<!-- ══════ OVERVIEW ══════ -->
+<div id="panel-overview" class="panel active">
+  <div class="explain-card open">
+    <div class="explain-card-header" onclick="toggle(this)">
+      <span class="expand-icon">▶</span>
+      <span style="font-size:14px;font-weight:500">What is a microservice? What did we build?</span>
+    </div>
+    <div class="explain-card-body">
+      <p class="a">A microservice is a <b>small, independent application</b> that does one job. Instead of one giant app, GymPro is split into 9 separate Spring Boot apps that talk to each other.</p>
+      <div class="row-item"><span class="row-key">eureka-server</span><span class="row-val"><b>Service Registry</b> — every service registers here so they can find each other by name</span></div>
+      <div class="row-item"><span class="row-key">gateway-service</span><span class="row-val"><b>Front door</b> — every Postman request comes here first. Checks JWT, then routes to the right service</span></div>
+      <div class="row-item"><span class="row-key">auth-service</span><span class="row-val"><b>Login / Register</b> — creates users, checks passwords, issues JWT tokens</span></div>
+      <div class="row-item"><span class="row-key">member-service</span><span class="row-val"><b>Member profiles</b> — CRUD for gym members</span></div>
+      <div class="row-item"><span class="row-key">trainer-service</span><span class="row-val"><b>Trainer profiles + schedules</b> — who is available when</span></div>
+      <div class="row-item"><span class="row-key">plan-service</span><span class="row-val"><b>Membership plans</b> — monthly/quarterly/yearly + subscribe</span></div>
+      <div class="row-item"><span class="row-key">booking-service</span><span class="row-val"><b>Book sessions</b> — member books a trainer slot. Uses Feign to call notification-service</span></div>
+      <div class="row-item"><span class="row-key">notification-service</span><span class="row-val"><b>Email sender</b> — sends Gmail SMTP emails. Called by booking via Feign</span></div>
+      <div class="row-item"><span class="row-key">payment-service</span><span class="row-val"><b>Payments</b> — dummy payment flow (UPI/card/QR)</span></div>
+    </div>
+  </div>
+
+  <div class="explain-card open">
+    <div class="explain-card-header" onclick="toggle(this)">
+      <span class="expand-icon">▶</span>
+      <span style="font-size:14px;font-weight:500">What happens when Postman hits POST /members?</span>
+    </div>
+    <div class="explain-card-body">
+      <div class="flow-box">1. Postman sends POST http://localhost:8080/members with Bearer token in header</div>
+      <div class="flow-arrow">↓</div>
+      <div class="flow-box">2. gateway-service (8080) receives it — JwtAuthFilter runs</div>
+      <div class="flow-arrow">↓</div>
+      <div class="flow-box">3. Gateway reads the JWT, extracts email + role, adds X-User-Email and X-User-Role headers</div>
+      <div class="flow-arrow">↓</div>
+      <div class="flow-box">4. Gateway looks at routing rules — /members/** → routes to member-service (lb://member-service)</div>
+      <div class="flow-arrow">↓</div>
+      <div class="flow-box">5. member-service (8082) MemberController.create() runs → MemberService.createMember() → saves to MySQL gympro_member</div>
+      <div class="flow-arrow">↓</div>
+      <div class="flow-box">6. Response flows back: member-service → gateway → Postman</div>
+    </div>
+  </div>
+
+  <div class="explain-card open">
+    <div class="explain-card-header" onclick="toggle(this)">
+      <span class="expand-icon">▶</span>
+      <span style="font-size:14px;font-weight:500">Every service follows the same 5-layer structure</span>
+    </div>
+    <div class="explain-card-body">
+      <div class="row-item"><span class="row-key">XxxApplication.java</span><span class="row-val">Entry point. main() method. Starts the Spring Boot app</span></div>
+      <div class="row-item"><span class="row-key">config/SecurityConfig</span><span class="row-val">Disables Spring Security's default login page. Gateway handles auth</span></div>
+      <div class="row-item"><span class="row-key">entity/Xxx.java</span><span class="row-val">The database table. Each field = one column</span></div>
+      <div class="row-item"><span class="row-key">repository/XxxRepository</span><span class="row-val">JpaRepository interface — gives you save(), findById(), findAll() for free</span></div>
+      <div class="row-item"><span class="row-key">service/XxxService</span><span class="row-val">Business logic — what to do with the data</span></div>
+      <div class="row-item"><span class="row-key">controller/XxxController</span><span class="row-val">REST endpoints — maps HTTP requests to service methods</span></div>
+      <div class="row-item"><span class="row-key">dto/XxxRequest</span><span class="row-val">Data Transfer Object — shape of the JSON the client sends in</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════ AUTH ══════ -->
+<div id="panel-auth" class="panel">
+  <div class="svc-header" style="background:var(--color-background-info);border-color:var(--color-border-info)">
+    <div class="svc-title" style="color:var(--color-text-info)">auth-service — port 8081 — database: gympro_auth</div>
+    <div class="svc-sub">Handles register, login, and JWT token generation. The only service that knows passwords.</div>
+  </div>
+
+  <div class="file-label">User.java — entity</div>
+  <div class="explain-card open">
+    <div class="explain-card-header" onclick="toggle(this)"><span class="expand-icon">▶</span><span style="font-size:13px;font-weight:500">What each annotation means</span></div>
+    <div class="explain-card-body">
+      <div class="row-item"><span class="row-key">@Entity</span><span class="row-val">Tells Spring: <b>this class is a database table</b>. Hibernate will create/manage a table for it</span></div>
+      <div class="row-item"><span class="row-key">@Table(name="users")</span><span class="row-val">The MySQL table name will be <b>users</b>. Without this it defaults to class name</span></div>
+      <div class="row-item"><span class="row-key">@Data</span><span class="row-val">Lombok — auto-generates <b>all getters, setters, toString, equals, hashCode</b>. Saves 50 lines of boilerplate</span></div>
+      <div class="row-item"><span class="row-key">@NoArgsConstructor</span><span class="row-val">Lombok — generates <b>empty constructor</b>. JPA requires this to create objects from DB rows</span></div>
+      <div class="row-item"><span class="row-key">@AllArgsConstructor</span><span class="row-val">Lombok — generates constructor with <b>all fields as parameters</b></span></div>
+      <div class="row-item"><span class="row-key">@Id</span><span class="row-val">This field is the <b>primary key</b> of the table</span></div>
+      <div class="row-item"><span class="row-key">@GeneratedValue</span><span class="row-val">MySQL will <b>auto-increment</b> the id — you don't set it manually</span></div>
+      <div class="row-item"><span class="row-key">@Column(unique=true)</span><span class="row-val">MySQL adds a UNIQUE constraint — <b>no two users can have the same email</b></span></div>
+      <div class="row-item"><span class="row-key">@Column(nullable=false)</span><span class="row-val">This field <b>cannot be null</b> in the database</span></div>
+    </div>
+  </div>
+
+  <div class="file-label">AuthService.java — business logic</div>
+  <div class="explain-card open">
+    <div class="explain-card-header" onclick="toggle(this)"><span class="expand-icon">▶</span><span style="font-size:13px;font-weight:500">register() method — line by line</span></div>
+    <div class="explain-card-body">
+      <div class="row-item"><span class="row-key">@Service</span><span class="row-val">Tells Spring: <b>manage this class</b> — create one instance and inject wherever needed</span></div>
+      <div class="row-item"><span class="row-key">@Autowired</span><span class="row-val"><b>Dependency Injection</b> — Spring finds the right object and injects it automatically. You don't write new UserRepository()</span></div>
+      <div class="row-item"><span class="row-key">repo.existsByEmail()</span><span class="row-val">Checks if email already in DB. If yes → throws RuntimeException → returns 500 with the message</span></div>
+      <div class="row-item"><span class="row-key">encoder.encode()</span><span class="row-val">Converts plain password like "admin123" into a BCrypt hash like "$2a$10$..." before saving. <b>Never store plain passwords</b></span></div>
+      <div class="row-item"><span class="row-key">repo.save(user)</span><span class="row-val">JPA runs INSERT INTO users(...) in MySQL</span></div>
+      <div class="row-item"><span class="row-key">jwtUtil.generateToken()</span><span class="row-val">Creates a JWT token with email + role embedded inside it</span></div>
+      <div class="row-item"><span class="row-key">new AuthResponse(...)</span><span class="row-val">Builds the JSON response object — Spring auto-converts to JSON using Jackson</span></div>
+    </div>
+  </div>
+
+  <div class="explain-card open">
+    <div class="explain-card-header" onclick="toggle(this)"><span class="expand-icon">▶</span><span style="font-size:13px;font-weight:500">login() method — line by line</span></div>
+    <div class="explain-card-body">
+      <div class="row-item"><span class="row-key">findByEmail(email)</span><span class="row-val">Queries DB: SELECT * FROM users WHERE email=? — if not found throws exception → 500</span></div>
+      <div class="row-item"><span class="row-key">encoder.matches()</span><span class="row-val">BCrypt compares plain password with stored hash. <b>You can't decrypt BCrypt</b> — it re-hashes and compares</span></div>
+      <div class="row-item"><span class="row-key">generateToken()</span><span class="row-val">Creates fresh JWT. Token contains: email (subject), role (claim), expiry (24hrs = 86400000ms)</span></div>
+    </div>
+  </div>
+
+  <div class="file-label">JwtUtil.java — token generator</div>
+  <div class="explain-card open">
+    <div class="explain-card-header" onclick="toggle(this)"><span class="expand-icon">▶</span><span style="font-size:13px;font-weight:500">How JWT token is built</span></div>
+    <div class="explain-card-body">
+      <p class="a">A JWT has 3 parts separated by dots: <b>Header.Payload.Signature</b></p>
+      <div class="row-item"><span class="row-key">@Value("${jwt.secret}")</span><span class="row-val">Reads jwt.secret from application.properties. That 256-bit key is used to sign the token</span></div>
+      <div class="row-item"><span class="row-key">.setSubject(email)</span><span class="row-val">Puts email in the Payload — this identifies <b>who</b> the token belongs to</span></div>
+      <div class="row-item"><span class="row-key">.claim("role", role)</span><span class="row-val">Adds role to Payload — gateway reads this to know if user is ADMIN/MEMBER/TRAINER</span></div>
+      <div class="row-item"><span class="row-key">.setExpiration()</span><span class="row-val">Token expires after 24 hours — after that it's invalid</span></div>
+      <div class="row-item"><span class="row-key">.signWith(getKey())</span><span class="row-val">Signs with HMAC-SHA256 — only our server can create valid tokens</span></div>
+    </div>
+  </div>
+
+  <div class="file-label">SecurityConfig.java</div>
+  <div class="explain-card">
+    <div class="explain-card-header" onclick="toggle(this)"><span class="expand-icon">▶</span><span style="font-size:13px;font-weight:500">Why we have SecurityConfig in auth-service (different from others)</span></div>
+    <div class="explain-card-body">
+      <p class="a">auth-service is special — it needs BCryptPasswordEncoder as a Bean. Other services just disable Spring Security. auth-service allows /auth/** without token (permitAll) and protects everything else.</p>
+      <div class="row-item"><span class="row-key">SessionCreationPolicy .STATELESS</span><span class="row-val"><b>No sessions</b> — Spring won't create HTTP sessions. JWT handles state instead</span></div>
+      <div class="row-item"><span class="row-key">csrf.disable()</span><span class="row-val">CSRF protection is not needed for REST APIs — only for browser-based form submissions</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════ GATEWAY ══════ -->
+<div id="panel-gateway" class="panel">
+  <div class="svc-header" style="background:var(--color-background-warning);border-color:var(--color-border-warning)">
+    <div class="svc-title" style="color:var(--color-text-warning)">gateway-service — port 8080 — NO database</div>
+    <div class="svc-sub">Single entry point. Validates JWT and routes every request to the correct microservice.</div>
+  </div>
+
+  <div class="file-label">application.properties — routing rules</div>
+  <div class="explain-card open">
+    <div class="explain-card-header" onclick="toggle(this)"><span class="expand-icon">▶</span><span style="font-size:13px;font-weight:500">How routing works — reading the config</span></div>
+    <div class="explain-card-body">
+      <div class="row-item"><span class="row-key">routes[0].predicates Path=/auth/**</span><span class="row-val">Any request to /auth/anything gets routed to auth-service</span></div>
+      <div class="row-item"><span class="row-key">routes[0].uri=lb://auth-service</span><span class="row-val"><b>lb://</b> means Load Balanced — gateway asks Eureka for the address of "auth-service"</span></div>
+      <div class="row-item"><span class="row-key">routes[1] Path=/members/**</span><span class="row-val">→ member-service. routes[2] /trainers/** → trainer-service. And so on</span></div>
+      <p class="a" style="margin-top:.5rem">Eureka knows that auth-service is at 127.0.0.1:8081, member-service at 127.0.0.1:8082 etc. Gateway asks Eureka for the address and forwards the request.</p>
+    </div>
+  </div>
+
+  <div class="file-label">JwtAuthFilter.java — the security guard</div>
+  <div class="explain-card open">
+    <div class="explain-card-header" onclick="toggle(this)"><span class="expand-icon">▶</span><span style="font-size:13px;font-weight:500">What this filter does on EVERY request</span></div>
+    <div class="explain-card-body">
+      <div class="row-item"><span class="row-key">implements GlobalFilter</span><span class="row-val">This code runs on <b>every single request</b> that comes through the gateway — no exceptions</span></div>
+      <div class="row-item"><span class="row-key">PUBLIC_URLS list</span><span class="row-val">/auth/register, /auth/login, /auth/test don't need a token — allowed through without checking</span></div>
+      <div class="row-item"><span class="row-key">authHeader.startsWith ("Bearer ")</span><span class="row-val">Token must come as: Authorization: Bearer eyJ... — anything else → 401 Unauthorized</span></div>
+      <div class="row-item"><span class="row-key">authHeader.substring(7)</span><span class="row-val">Removes the word "Bearer " (7 characters) to get just the token string</span></div>
+      <div class="row-item"><span class="row-key">Jwts.parserBuilder()</span><span class="row-val">Validates the token's signature using the same secret key — if tampered → exception → 401</span></div>
+      <div class="row-item"><span class="row-key">claims.get("role")</span><span class="row-val">Extracts the role that was embedded when the token was created in auth-service</span></div>
+      <div class="row-item"><span class="row-key">.header("X-User-Role", role)</span><span class="row-val"><b>Adds a new header</b> to the request before forwarding. Downstream services read this to check role</span></div>
+      <div class="row-item"><span class="row-key">getOrder() return -1</span><span class="row-val">-1 means this filter runs <b>before all other filters</b> — highest priority</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════ MEMBER ══════ -->
+<div id="panel-member" class="panel">
+  <div class="svc-header" style="background:var(--color-background-success);border-color:var(--color-border-success)">
+    <div class="svc-title" style="color:var(--color-text-success)">member-service — port 8082 — database: gympro_member</div>
+    <div class="svc-sub">CRUD for gym member profiles. Simplest service — good one to understand the pattern.</div>
+  </div>
+
+  <div class="file-label">MemberController.java</div>
+  <div class="explain-card open">
+    <div class="explain-card-header" onclick="toggle(this)"><span class="expand-icon">▶</span><span style="font-size:13px;font-weight:500">Controller annotations explained</span></div>
+    <div class="explain-card-body">
+      <div class="row-item"><span class="row-key">@RestController</span><span class="row-val">Combination of @Controller + @ResponseBody. Every method <b>returns JSON automatically</b> — no need to convert manually</span></div>
+      <div class="row-item"><span class="row-key">@RequestMapping("/members")</span><span class="row-val">All endpoints in this class start with /members</span></div>
+      <div class="row-item"><span class="row-key">@PostMapping</span><span class="row-val">Handles HTTP POST /members — used for CREATE</span></div>
+      <div class="row-item"><span class="row-key">@GetMapping("/{id}")</span><span class="row-val">Handles HTTP GET /members/1 — the {id} is a path variable</span></div>
+      <div class="row-item"><span class="row-key">@PutMapping("/{id}")</span><span class="row-val">Handles HTTP PUT — used for UPDATE</span></div>
+      <div class="row-item"><span class="row-key">@DeleteMapping("/{id}")</span><span class="row-val">Handles HTTP DELETE — used for DELETE (soft delete here)</span></div>
+      <div class="row-item"><span class="row-key">@RequestBody Member</span><span class="row-val">Spring reads the JSON from request body and <b>converts it to a Member object automatically</b></span></div>
+      <div class="row-item"><span class="row-key">@PathVariable Long id</span><span class="row-val">Extracts the number from the URL — /members/5 gives id=5</span></div>
+      <div class="row-item"><span class="row-key">@RequestHeader ("X-User-Role")</span><span class="row-val">Reads the header that gateway added. Used to check if caller is ADMIN before allowing access</span></div>
+    </div>
+  </div>
+
+  <div class="file-label">MemberRepository.java</div>
+  <div class="explain-card open">
+    <div class="explain-card-header" onclick="toggle(this)"><span class="expand-icon">▶</span><span style="font-size:13px;font-weight:500">How JpaRepository magic works</span></div>
+    <div class="explain-card-body">
+      <p class="a">By extending JpaRepository&lt;Member, Long&gt; you get these methods for FREE — no SQL needed:</p>
+      <div class="row-item"><span class="row-key">save(member)</span><span class="row-val">INSERT or UPDATE — if id is null: INSERT, if id exists: UPDATE</span></div>
+      <div class="row-item"><span class="row-key">findById(id)</span><span class="row-val">SELECT * FROM members WHERE id=? — returns Optional (may or may not have a value)</span></div>
+      <div class="row-item"><span class="row-key">findAll()</span><span class="row-val">SELECT * FROM members — returns all rows as a List</span></div>
+      <div class="row-item"><span class="row-key">deleteById(id)</span><span class="row-val">DELETE FROM members WHERE id=?</span></div>
+      <div class="row-item"><span class="row-key">findByEmail(email)</span><span class="row-val"><b>Custom query</b> — Spring reads the method name and auto-generates: SELECT * FROM members WHERE email=?</span></div>
+      <p class="a" style="margin-top:.4rem">Spring Data JPA reads method names and <b>generates SQL automatically</b>. findByEmail → WHERE email=. findByStatus → WHERE status=. No SQL writing needed.</p>
+    </div>
+  </div>
+
+  <div class="file-label">MemberService.java</div>
+  <div class="explain-card open">
+    <div class="explain-card-header" onclick="toggle(this)"><span class="expand-icon">▶</span><span style="font-size:13px;font-weight:500">Soft delete — why we don't actually delete</span></div>
+    <div class="explain-card-body">
+      <p class="a">deleteMember() doesn't run DELETE FROM members. Instead it sets status="INACTIVE". This is called a <b>soft delete</b>.</p>
+      <p class="a">Why? Because if you delete a member row, all their bookings and payments have a missing memberId — the data breaks. Keeping the row with INACTIVE status preserves history.</p>
+      <div class="row-item"><span class="row-key">orElseThrow()</span><span class="row-val">If findById() finds nothing (Optional is empty), throw RuntimeException → Spring returns 500 with message</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════ TRAINER ══════ -->
+<div id="panel-trainer" class="panel">
+  <div class="svc-header" style="background:var(--color-background-secondary);border-color:var(--color-border-tertiary)">
+    <div class="svc-title">trainer-service — port 8083 — database: gympro_trainer</div>
+    <div class="svc-sub">Trainer profiles + schedule management. Two entities: Trainer and TrainerSchedule.</div>
+  </div>
+
+  <div class="file-label">TrainerSchedule.java — second entity</div>
+  <div class="explain-card open">
+    <div class="explain-card-header" onclick="toggle(this)"><span class="expand-icon">▶</span><span style="font-size:13px;font-weight:500">Why there are two entity classes in one service</span></div>
+    <div class="explain-card-body">
+      <p class="a">A trainer can have many schedule slots (MON 9-11, WED 9-11, FRI 2-4). Instead of storing all days in one column (bad), we have a separate table <b>trainer_schedules</b> where each row is one time slot.</p>
+      <div class="row-item"><span class="row-key">trainerId field</span><span class="row-val">Links back to the trainer. This is a <b>logical foreign key</b> — no @JoinColumn needed in microservices because each service owns its own DB</span></div>
+      <div class="row-item"><span class="row-key">available boolean</span><span class="row-val">true = open slot. When booking-service books this slot, it calls PUT /trainers/schedule/{id}/book → sets available=false</span></div>
+    </div>
+  </div>
+
+  <div class="file-label">TrainerRepository + TrainerScheduleRepository</div>
+  <div class="explain-card open">
+    <div class="explain-card-header" onclick="toggle(this)"><span class="expand-icon">▶</span><span style="font-size:13px;font-weight:500">Custom query methods</span></div>
+    <div class="explain-card-body">
+      <div class="row-item"><span class="row-key">findBySpecialization (spec)</span><span class="row-val">Auto-generates: SELECT * FROM trainers WHERE specialization=? — used for filtering trainers by type</span></div>
+      <div class="row-item"><span class="row-key">findByTrainerId (trainerId)</span><span class="row-val">SELECT * FROM trainer_schedules WHERE trainer_id=?</span></div>
+      <div class="row-item"><span class="row-key">findByTrainerIdAnd Available(id, true)</span><span class="row-val">SELECT * FROM trainer_schedules WHERE trainer_id=? AND available=1 — only open slots</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════ PLAN ══════ -->
+<div id="panel-plan" class="panel">
+  <div class="svc-header" style="background:var(--color-background-warning);border-color:var(--color-border-warning)">
+    <div class="svc-title" style="color:var(--color-text-warning)">plan-service — port 8084 — database: gympro_plan</div>
+    <div class="svc-sub">Two entities: MembershipPlan (what plans exist) and MemberSubscription (who subscribed to what).</div>
+  </div>
+
+  <div class="file-label">PlanService.java — subscribe() method</div>
+  <div class="explain-card open">
+    <div class="explain-card-header" onclick="toggle(this)"><span class="expand-icon">▶</span><span style="font-size:13px;font-weight:500">How subscribe() works step by step</span></div>
+    <div class="explain-card-body">
+      <div class="row-item"><span class="row-key">getPlanById(planId)</span><span class="row-val">Fetches plan from membership_plans table — gets the price and durationDays</span></div>
+      <div class="row-item"><span class="row-key">LocalDate.now()</span><span class="row-val">Gets today's date as start date</span></div>
+      <div class="row-item"><span class="row-key">start.plusDays (durationDays)</span><span class="row-val">Calculates end date — e.g. today + 30 = next month. No manual date math</span></div>
+      <div class="row-item"><span class="row-key">sub.setStatus("ACTIVE")</span><span class="row-val">New subscription is active from today</span></div>
+      <div class="row-item"><span class="row-key">subRepo.save(sub)</span><span class="row-val">Inserts into member_subscriptions table</span></div>
+    </div>
+  </div>
+
+  <div class="file-label">createPlan() — auto duration days</div>
+  <div class="explain-card open">
+    <div class="explain-card-header" onclick="toggle(this)"><span class="expand-icon">▶</span><span style="font-size:13px;font-weight:500">Why durationDays is set automatically</span></div>
+    <div class="explain-card-body">
+      <p class="a">When ADMIN creates a plan, they just say "MONTHLY" or "YEARLY". The service automatically sets the right number of days:</p>
+      <div class="row-item"><span class="row-key">MONTHLY</span><span class="row-val">→ 30 days</span></div>
+      <div class="row-item"><span class="row-key">QUARTERLY</span><span class="row-val">→ 90 days</span></div>
+      <div class="row-item"><span class="row-key">YEARLY</span><span class="row-val">→ 365 days</span></div>
+      <p class="a" style="margin-top:.4rem">Admin doesn't need to type 30 or 365 — the service handles it based on durationType string.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ══════ BOOKING ══════ -->
+<div id="panel-booking" class="panel">
+  <div class="svc-header" style="background:var(--color-background-info);border-color:var(--color-border-info)">
+    <div class="svc-title" style="color:var(--color-text-info)">booking-service — port 8085 — database: gympro_booking</div>
+    <div class="svc-sub">The most complex service. Uses OpenFeign to call notification-service. Has @EnableFeignClients.</div>
+  </div>
+
+  <div class="file-label">BookingServiceApplication.java</div>
+  <div class="explain-card open">
+    <div class="explain-card-header" onclick="toggle(this)"><span class="expand-icon">▶</span><span style="font-size:13px;font-weight:500">Why booking-service has @EnableFeignClients</span></div>
+    <div class="explain-card-body">
+      <div class="row-item"><span class="row-key">@EnableFeignClients</span><span class="row-val">Tells Spring: <b>scan for @FeignClient interfaces</b> and create HTTP client objects for them automatically</span></div>
+      <p class="a" style="margin-top:.4rem">Without this annotation, the NotificationClient interface won't work — you'll get a NoSuchBeanDefinitionException. Only services that call other services need this.</p>
+    </div>
+  </div>
+
+  <div class="file-label">NotificationClient.java — Feign interface</div>
+  <div class="explain-card open">
+    <div class="explain-card-header" onclick="toggle(this)"><span class="expand-icon">▶</span><span style="font-size:13px;font-weight:500">What is Feign and why it's powerful</span></div>
+    <div class="explain-card-body">
+      <p class="a">Without Feign, calling another microservice means writing 10+ lines of RestTemplate code. Feign reduces it to just an interface:</p>
+      <div class="row-item"><span class="row-key">@FeignClient (name="notification-service")</span><span class="row-val">Spring asks Eureka: "where is notification-service?" Gets the address. Creates an HTTP client. You just call the method</span></div>
+      <div class="row-item"><span class="row-key">@PostMapping("/notify/send")</span><span class="row-val">Feign will call POST http://notification-service/notify/send with the params</span></div>
+      <div class="row-item"><span class="row-key">@RequestParam</span><span class="row-val">Each param becomes a query parameter: /notify/send?email=x&subject=y&message=z</span></div>
+      <p class="a" style="margin-top:.4rem">When BookingService calls notificationClient.sendNotification(...) — it looks like a normal Java method call but it's actually making an HTTP request to another microservice!</p>
+    </div>
+  </div>
+
+  <div class="file-label">BookingService.java — createBooking()</div>
+  <div class="explain-card open">
+    <div class="explain-card-header" onclick="toggle(this)"><span class="expand-icon">▶</span><span style="font-size:13px;font-weight:500">Why notification is inside try-catch</span></div>
+    <div class="explain-card-body">
+      <p class="a">The booking is saved to DB first, then notification is attempted. The try-catch ensures that <b>if email fails, the booking still succeeds</b>.</p>
+      <div class="row-item"><span class="row-key">repo.save(booking)</span><span class="row-val">Booking saved to gympro_booking DB — this MUST succeed</span></div>
+      <div class="row-item"><span class="row-key">try { notificationClient... }</span><span class="row-val">Email attempted — if Gmail is not configured or notification-service is down, this fails silently</span></div>
+      <div class="row-item"><span class="row-key">catch(Exception e) { sysout }</span><span class="row-val">Just prints warning to console — doesn't throw — so caller gets 200 OK even if email failed</span></div>
+      <p class="a" style="margin-top:.4rem">This is a good design pattern: <b>don't fail the main operation because a side effect failed</b>.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ══════ NOTIFICATION ══════ -->
+<div id="panel-notification" class="panel">
+  <div class="svc-header" style="background:var(--color-background-secondary);border-color:var(--color-border-tertiary)">
+    <div class="svc-title">notification-service — port 8086 — NO database</div>
+    <div class="svc-sub">Receives email requests and sends them via Gmail SMTP. Called by booking-service via Feign.</div>
+  </div>
+
+  <div class="file-label">EmailService.java</div>
+  <div class="explain-card open">
+    <div class="explain-card-header" onclick="toggle(this)"><span class="expand-icon">▶</span><span style="font-size:13px;font-weight:500">How Gmail SMTP sending works</span></div>
+    <div class="explain-card-body">
+      <div class="row-item"><span class="row-key">JavaMailSender</span><span class="row-val">Spring Boot auto-configures this bean from application.properties — reads Gmail credentials and SMTP settings</span></div>
+      <div class="row-item"><span class="row-key">SimpleMailMessage</span><span class="row-val">Creates a plain-text email object with to, subject, body fields</span></div>
+      <div class="row-item"><span class="row-key">mailSender.send(message)</span><span class="row-val">Connects to smtp.gmail.com:587, authenticates with your Gmail, sends the email</span></div>
+      <div class="row-item"><span class="row-key">spring.mail.password in properties</span><span class="row-val">Must be a <b>Gmail App Password</b> (16 chars) — not your real Gmail password. Get it from Google Account → Security → 2FA → App Passwords</span></div>
+    </div>
+  </div>
+
+  <div class="file-label">application.properties — why no datasource</div>
+  <div class="explain-card open">
+    <div class="explain-card-header" onclick="toggle(this)"><span class="expand-icon">▶</span><span style="font-size:13px;font-weight:500">Why this service has no database</span></div>
+    <div class="explain-card-body">
+      <p class="a">Notification-service only sends emails — it doesn't need to store anything. It's a <b>stateless service</b>. No datasource URL, no JPA, no MySQL dependency in pom.xml.</p>
+      <p class="a">This is exactly why microservices are powerful — each service only has what it needs. No wasted resources.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ══════ ANNOTATIONS CHEATSHEET ══════ -->
+<div id="panel-annotations" class="panel">
+  <div class="explain-card open">
+    <div class="explain-card-header" onclick="toggle(this)"><span class="expand-icon">▶</span><span style="font-size:13px;font-weight:500">Spring Boot annotations — complete cheatsheet</span></div>
+    <div class="explain-card-body">
+      <div class="row-item"><span class="row-key">@SpringBootApplication</span><span class="row-val">= @Configuration + @EnableAutoConfiguration + @ComponentScan. Starts the whole Spring app</span></div>
+      <div class="row-item"><span class="row-key">@EnableDiscoveryClient</span><span class="row-val">Registers this service with Eureka so gateway can find it</span></div>
+      <div class="row-item"><span class="row-key">@EnableFeignClients</span><span class="row-val">Scans for @FeignClient interfaces and creates HTTP clients. Only in services that call others</span></div>
+      <div class="row-item"><span class="row-key">@RestController</span><span class="row-val">Marks a class as REST API controller. All methods return JSON automatically</span></div>
+      <div class="row-item"><span class="row-key">@Service</span><span class="row-val">Marks business logic layer. Spring creates one instance and manages it</span></div>
+      <div class="row-item"><span class="row-key">@Repository (implied)</span><span class="row-val">JpaRepository already has this. Marks data access layer</span></div>
+      <div class="row-item"><span class="row-key">@Component</span><span class="row-val">Generic Spring-managed bean. Used on JwtUtil, JwtAuthFilter etc.</span></div>
+      <div class="row-item"><span class="row-key">@Autowired</span><span class="row-val">Injects a Spring bean — Spring finds the right object and sets the field</span></div>
+      <div class="row-item"><span class="row-key">@Bean</span><span class="row-val">Method return value becomes a Spring-managed object. Used in SecurityConfig for PasswordEncoder</span></div>
+      <div class="row-item"><span class="row-key">@Configuration</span><span class="row-val">Class contains @Bean methods. Spring processes it at startup</span></div>
+      <div class="row-item"><span class="row-key">@Value("${key}")</span><span class="row-val">Reads a value from application.properties into a field</span></div>
+      <div class="row-item"><span class="row-key">@Entity</span><span class="row-val">This class maps to a database table</span></div>
+      <div class="row-item"><span class="row-key">@Table(name="x")</span><span class="row-val">Sets the MySQL table name</span></div>
+      <div class="row-item"><span class="row-key">@Id + @GeneratedValue</span><span class="row-val">Primary key + auto-increment</span></div>
+      <div class="row-item"><span class="row-key">@Column(unique, nullable)</span><span class="row-val">Adds UNIQUE / NOT NULL constraints to the column</span></div>
+      <div class="row-item"><span class="row-key">@Data (Lombok)</span><span class="row-val">Auto-generates getters, setters, toString, equals, hashCode</span></div>
+      <div class="row-item"><span class="row-key">@NoArgsConstructor</span><span class="row-val">Generates empty constructor — required by JPA</span></div>
+      <div class="row-item"><span class="row-key">@AllArgsConstructor</span><span class="row-val">Generates constructor with all fields</span></div>
+      <div class="row-item"><span class="row-key">@Builder (Lombok)</span><span class="row-val">Generates builder pattern: Member.builder().name("x").build()</span></div>
+      <div class="row-item"><span class="row-key">@FeignClient (name="x")</span><span class="row-val">Interface becomes an HTTP client that calls service named x</span></div>
+      <div class="row-item"><span class="row-key">@RequestMapping("/x")</span><span class="row-val">Base URL prefix for all methods in the controller</span></div>
+      <div class="row-item"><span class="row-key">@PostMapping / @GetMapping / @PutMapping / @DeleteMapping</span><span class="row-val">Maps specific HTTP methods to Java methods</span></div>
+      <div class="row-item"><span class="row-key">@RequestBody</span><span class="row-val">Converts incoming JSON body to Java object automatically</span></div>
+      <div class="row-item"><span class="row-key">@PathVariable</span><span class="row-val">Extracts value from URL path — /members/{id} → id variable</span></div>
+      <div class="row-item"><span class="row-key">@RequestParam</span><span class="row-val">Extracts query parameter — /subscribe?planId=1 → planId variable</span></div>
+      <div class="row-item"><span class="row-key">@RequestHeader</span><span class="row-val">Reads an HTTP header — used to read X-User-Role that gateway added</span></div>
+    </div>
+  </div>
+
+  <div class="explain-card open">
+    <div class="explain-card-header" onclick="toggle(this)"><span class="expand-icon">▶</span><span style="font-size:13px;font-weight:500">Top 10 reviewer questions — with answers</span></div>
+    <div class="explain-card-body">
+      <div class="row-item"><span class="row-key">What is Eureka?</span><span class="row-val">Netflix service registry. Every microservice registers its name and IP. Gateway asks Eureka to find service addresses dynamically</span></div>
+      <div class="row-item"><span class="row-key">What is API Gateway?</span><span class="row-val">Single entry point for all client requests. Validates JWT, extracts role, routes to correct service using lb:// (load balanced)</span></div>
+      <div class="row-item"><span class="row-key">How does JWT work?</span><span class="row-val">Login → auth-service creates token with email+role+expiry, signed with secret. Client sends token in every request. Gateway validates signature, extracts role, forwards as X-User-Role header</span></div>
+      <div class="row-item"><span class="row-key">What is Feign?</span><span class="row-val">Declarative HTTP client. You write an interface with @FeignClient — Spring creates the HTTP client automatically. booking-service calls notification-service this way</span></div>
+      <div class="row-item"><span class="row-key">What is DB-per-service?</span><span class="row-val">Each microservice has its own MySQL database. Services don't share tables. Data is linked by IDs (logical FK) not physical foreign keys</span></div>
+      <div class="row-item"><span class="row-key">What is ddl-auto=update?</span><span class="row-val">Hibernate reads entity classes and automatically creates/updates MySQL tables. You don't write CREATE TABLE SQL manually</span></div>
+      <div class="row-item"><span class="row-key">What is BCrypt?</span><span class="row-val">One-way hashing for passwords. "admin123" becomes "$2a$10$...". Cannot be reversed. Login uses encoder.matches() to compare</span></div>
+      <div class="row-item"><span class="row-key">What is @Autowired?</span><span class="row-val">Dependency Injection. Spring finds the matching bean and injects it. You don't write new XxxService(). Spring manages object lifecycle</span></div>
+      <div class="row-item"><span class="row-key">Why X-User-Role header?</span><span class="row-val">Gateway validates JWT once and forwards role to services. Services don't need JWT library — they just read the header. Avoids duplicate validation</span></div>
+      <div class="row-item"><span class="row-key">What is soft delete?</span><span class="row-val">Instead of DELETE FROM table, we set status=INACTIVE. Preserves history — bookings/payments still have valid memberId references</span></div>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<script>
+function show(id) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('panel-' + id).classList.add('active');
+  event.target.classList.add('active');
+}
+function toggle(header) {
+  const card = header.parentElement;
+  card.classList.toggle('open');
+}
+</script>
