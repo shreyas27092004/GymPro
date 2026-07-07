@@ -1,0 +1,116 @@
+// src/pages/admin/Payments.jsx
+
+import { useState, useEffect } from 'react';
+import { paymentApi } from '../../api/api';
+import { LoadingCenter, Alert, StatusBadge, EmptyState, SectionHeader } from '../../components/UI';
+
+export default function AdminPayments() {
+  const [payments, setPayments] = useState([]);
+  const [loading,  setLoading]  = useState(true);
+  const [error,    setError]    = useState('');
+  const [filter,   setFilter]   = useState('ALL');
+
+  const load = async () => {
+    try {
+      setLoading(true);
+      const res = await paymentApi.getAll();
+      setPayments(res.data.sort((a, b) => b.id - a.id));
+    } catch (e) {
+      setError(e.response?.data?.message || 'Failed to load payments');
+    } finally { setLoading(false); }
+  };
+
+  useEffect(() => { load(); }, []);
+
+  const filtered = filter === 'ALL' ? payments : payments.filter(p => p.status === filter);
+
+  const totalRevenue = payments.filter(p => p.status === 'SUCCESS').reduce((s, p) => s + (p.amount || 0), 0);
+  const pendingCount = payments.filter(p => p.status === 'PENDING').length;
+  const refundTotal  = payments.filter(p => p.status === 'REFUNDED').reduce((s, p) => s + (p.amount || 0), 0);
+
+  const handleRefund = async (id) => {
+    try {
+      await paymentApi.refund(id);
+      load();
+    } catch (e) {
+      setError(e.response?.data?.message || 'Refund failed');
+    }
+  };
+
+  const METHOD_ICONS = { UPI: '📱', CASH: '💵', CREDIT_CARD: '💳', DEBIT_CARD: '🏧', QR_CODE: '🔳' };
+
+  return (
+    <div className="fade-in">
+      <div className="content-header">
+        <div className="page-title">PAYMENTS</div>
+        <div className="page-subtitle">All financial transactions</div>
+      </div>
+      <div className="content-body">
+        {error && <Alert type="error">{error}</Alert>}
+
+        {/* Stats */}
+        <div className="stats-grid stats-grid-3" style={{ marginBottom: 24 }}>
+          {[
+            { label: 'Total Revenue', value: `₹${totalRevenue.toFixed(0)}`, color: 'var(--green)', icon: '💰' },
+            { label: 'Pending Payments', value: pendingCount, color: 'var(--amber)', icon: '⏳' },
+            { label: 'Total Refunds', value: `₹${refundTotal.toFixed(0)}`, color: 'var(--red)', icon: '↩️' },
+          ].map(s => (
+            <div key={s.label} className="stat-card">
+              <div className="stat-accent-bar" style={{ background: s.color }} />
+              <div className="stat-icon">{s.icon}</div>
+              <div className="stat-value" style={{ color: s.color }}>{s.value}</div>
+              <div className="stat-label">{s.label}</div>
+            </div>
+          ))}
+        </div>
+
+        <div className="card">
+          <SectionHeader title={`${filtered.length} Transactions`}>
+            <div className="tabs" style={{ marginBottom: 0 }}>
+              {['ALL','SUCCESS','PENDING','FAILED','REFUNDED'].map(s => (
+                <button key={s} className={`tab ${filter === s ? 'active' : ''}`} onClick={() => setFilter(s)}>
+                  {s === 'ALL' ? 'All' : s.charAt(0) + s.slice(1).toLowerCase()}
+                </button>
+              ))}
+            </div>
+          </SectionHeader>
+
+          {loading ? <LoadingCenter /> : filtered.length === 0 ? (
+            <EmptyState icon="💳" text="No transactions found" />
+          ) : (
+            <div className="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Txn ID</th><th>Member</th><th>Amount</th>
+                    <th>Method</th><th>Description</th><th>Date</th><th>Status</th><th></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filtered.map(p => (
+                    <tr key={p.id}>
+                      <td style={{ fontSize: 11, color: 'var(--text3)', fontFamily: 'monospace' }}>{p.transactionId?.slice(0,16)}…</td>
+                      <td style={{ color: 'var(--text)', fontWeight: 600 }}>{p.memberEmail}</td>
+                      <td style={{ color: 'var(--green)', fontWeight: 700 }}>₹{p.amount}</td>
+                      <td>
+                        <span style={{ fontSize: 13 }}>{METHOD_ICONS[p.paymentMethod] || '💳'} {p.paymentMethod}</span>
+                      </td>
+                      <td style={{ maxWidth: 180, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontSize: 13 }}>{p.description}</td>
+                      <td style={{ fontSize: 12 }}>{p.paidAt?.slice(0, 16).replace('T', ' ')}</td>
+                      <td><StatusBadge status={p.status} /></td>
+                      <td>
+                        {p.status === 'SUCCESS' && (
+                          <button className="btn btn-ghost btn-sm" onClick={() => handleRefund(p.id)}>Refund</button>
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
