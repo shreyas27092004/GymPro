@@ -105,7 +105,7 @@ const ROLE_COLORS = {
 };
 
 export default function Sidebar({ active, onNav }) {
-  const { role, logout, email, userId } = useAuth();
+  const { role, logout, email,name, userId } = useAuth();
   const navigate = useNavigate();
 
   const navItems = role === 'ADMIN' ? ADMIN_NAV : role === 'TRAINER' ? TRAINER_NAV : MEMBER_NAV;
@@ -210,7 +210,7 @@ export default function Sidebar({ active, onNav }) {
             {initials}
           </div>
           <div>
-            <div className="user-name">{email || 'User'}</div>
+            <div className="user-name">{name || 'User'}</div>
             <div className="user-role" style={{ color: rc.color }}>{role}</div>
           </div>
         </div>
