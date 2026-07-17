@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>GymPro — Gym Management System</title>
+    <style>
+      @keyframes spin { to { transform: rotate(360deg); } }
+    </style>
+    <script>
+      // Runs before React mounts so there's no flash of the wrong theme.
+      // Kept in sync with src/theme/ThemeContext.jsx's storage key/logic.
+      (function () {
+        try {
+          var stored = localStorage.getItem('gympro-theme');
+          var theme = stored === 'light' || stored === 'dark'
+            ? stored
+            : (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script>
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>
