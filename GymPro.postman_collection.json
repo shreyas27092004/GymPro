@@ -1,0 +1,2419 @@
+{
+  "info": {
+    "name": "GymPro 4.0 API",
+    "description": "Full API collection for GymPro microservices platform, routed through the API Gateway (port 8080). 9 services: Eureka, Gateway, Auth, Member, Trainer, Plan, Booking, Notification, Payment, Chatbot.\n\nAuth: most endpoints require a JWT Bearer token obtained from Auth > Login (auto-saved to {{token}} via the collection-level test script). Role-restricted endpoints additionally require an X-User-Role header (ADMIN / TRAINER / MEMBER).",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "event": [],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080",
+      "type": "string"
+    },
+    {
+      "key": "token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "adminToken",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "trainerToken",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "memberToken",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "memberId",
+      "value": "1",
+      "type": "string"
+    },
+    {
+      "key": "trainerId",
+      "value": "1",
+      "type": "string"
+    },
+    {
+      "key": "scheduleId",
+      "value": "1",
+      "type": "string"
+    },
+    {
+      "key": "planId",
+      "value": "1",
+      "type": "string"
+    },
+    {
+      "key": "subscriptionId",
+      "value": "1",
+      "type": "string"
+    },
+    {
+      "key": "bookingId",
+      "value": "1",
+      "type": "string"
+    },
+    {
+      "key": "paymentId",
+      "value": "1",
+      "type": "string"
+    },
+    {
+      "key": "notificationId",
+      "value": "1",
+      "type": "string"
+    },
+    {
+      "key": "userId",
+      "value": "1",
+      "type": "string"
+    },
+    {
+      "key": "memberEmail",
+      "value": "member@gympro.com",
+      "type": "string"
+    },
+    {
+      "key": "trainerEmail",
+      "value": "trainer@gympro.com",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Register",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/auth/register",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "register"
+              ]
+            },
+            "description": "Creates a new user. role=ADMIN triggers the admin-approval flow instead (see Verify Admin Registration).",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Test Member\",\n  \"email\": \"member@gympro.com\",\n  \"password\": \"admin123\",\n  \"role\": \"MEMBER\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Register - Admin (first admin)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/auth/register",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "register"
+              ]
+            },
+            "description": "If no admin exists yet, the very first ADMIN registration is created immediately. Otherwise a verification code is emailed to existing admins.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Admin User\",\n  \"email\": \"admin@gympro.com\",\n  \"password\": \"admin123\",\n  \"role\": \"ADMIN\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Verify Admin Registration",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/auth/verify-admin-registration",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "verify-admin-registration"
+              ]
+            },
+            "description": "Step 2 for ADMIN signups when other admins already exist.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"newadmin@gympro.com\",\n  \"otp\": \"123456\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "login"
+              ]
+            },
+            "description": "Returns a JWT in `token`. A test script saves it to {{token}} automatically.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"member@gympro.com\",\n  \"password\": \"admin123\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const data = pm.response.json();",
+                  "    pm.collectionVariables.set('token', data.token);",
+                  "    console.log('Saved JWT to {{token}}: role=' + data.role);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Forgot Password",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/auth/forgot-password",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "forgot-password"
+              ]
+            },
+            "description": "Step 1 of password reset \u2014 emails a 6-digit OTP.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"member@gympro.com\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Verify OTP",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/auth/verify-otp",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "verify-otp"
+              ]
+            },
+            "description": "Step 2 of password reset.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"member@gympro.com\",\n  \"otp\": \"123456\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Reset Password",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/auth/reset-password",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "reset-password"
+              ]
+            },
+            "description": "Step 3 of password reset.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"member@gympro.com\",\n  \"otp\": \"123456\",\n  \"newPassword\": \"newPass123\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Health Check",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/auth/test",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "test"
+              ]
+            },
+            "description": "",
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Internal - Get Admin User IDs",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/auth/internal/admin-ids",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "internal",
+                "admin-ids"
+              ]
+            },
+            "description": "Used service-to-service; not normally called from the frontend.",
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Members",
+      "item": [
+        {
+          "name": "Create Member",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/members",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "members"
+              ]
+            },
+            "description": "Typically called right after Auth > Register with role=MEMBER.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Test Member\",\n  \"email\": \"member@gympro.com\",\n  \"phone\": \"9876543210\",\n  \"address\": \"123 MG Road, Bengaluru\",\n  \"gender\": \"MALE\",\n  \"status\": \"ACTIVE\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get All Members (Admin)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-User-Role",
+                "value": "ADMIN",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/members",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "members"
+              ]
+            },
+            "description": "Requires X-User-Role: ADMIN."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Member By ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/members/{{memberId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "members",
+                "{{memberId}}"
+              ]
+            },
+            "description": ""
+          },
+          "response": []
+        },
+        {
+          "name": "Update Member",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/members/{{memberId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "members",
+                "{{memberId}}"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Test Member Updated\",\n  \"email\": \"member@gympro.com\",\n  \"phone\": \"9876543210\",\n  \"address\": \"456 Brigade Road, Bengaluru\",\n  \"gender\": \"MALE\",\n  \"status\": \"ACTIVE\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Member (Admin)",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "X-User-Role",
+                "value": "ADMIN",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/members/{{memberId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "members",
+                "{{memberId}}"
+              ]
+            },
+            "description": ""
+          },
+          "response": []
+        },
+        {
+          "name": "Get Member By Email",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/members/by-email/{{memberEmail}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "members",
+                "by-email",
+                "{{memberEmail}}"
+              ]
+            },
+            "description": ""
+          },
+          "response": []
+        },
+        {
+          "name": "Health Check",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/members/test",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "members",
+                "test"
+              ]
+            },
+            "description": ""
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Trainers",
+      "item": [
+        {
+          "name": "Create Trainer (Admin)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-User-Role",
+                "value": "ADMIN",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/trainers",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "trainers"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Test Trainer\",\n  \"email\": \"trainer@gympro.com\",\n  \"phone\": \"9123456789\",\n  \"specialization\": \"Weight Loss\",\n  \"experienceYears\": 5,\n  \"status\": \"ACTIVE\",\n  \"sessionFee\": 500.0\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get All Trainers",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/trainers",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "trainers"
+              ]
+            },
+            "description": ""
+          },
+          "response": []
+        },
+        {
+          "name": "Get Trainer By ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/trainers/{{trainerId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "trainers",
+                "{{trainerId}}"
+              ]
+            },
+            "description": ""
+          },
+          "response": []
+        },
+        {
+          "name": "Get Pending Trainers (Admin)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-User-Role",
+                "value": "ADMIN",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/trainers/pending",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "trainers",
+                "pending"
+              ]
+            },
+            "description": "Trainers who self-registered and are awaiting approval."
+          },
+          "response": []
+        },
+        {
+          "name": "Approve Trainer (Admin)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "X-User-Role",
+                "value": "ADMIN",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/trainers/{{trainerId}}/approve",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "trainers",
+                "{{trainerId}}",
+                "approve"
+              ]
+            },
+            "description": ""
+          },
+          "response": []
+        },
+        {
+          "name": "Reject Trainer (Admin)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "X-User-Role",
+                "value": "ADMIN",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/trainers/{{trainerId}}/reject",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "trainers",
+                "{{trainerId}}",
+                "reject"
+              ]
+            },
+            "description": ""
+          },
+          "response": []
+        },
+        {
+          "name": "Get Trainer By Email",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/trainers/by-email/{{trainerEmail}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "trainers",
+                "by-email",
+                "{{trainerEmail}}"
+              ]
+            },
+            "description": ""
+          },
+          "response": []
+        },
+        {
+          "name": "Get Trainers By Specialization",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/trainers/specialization/Weight%20Loss",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "trainers",
+                "specialization",
+                "Weight%20Loss"
+              ]
+            },
+            "description": ""
+          },
+          "response": []
+        },
+        {
+          "name": "Update Trainer",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/trainers/{{trainerId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "trainers",
+                "{{trainerId}}"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Test Trainer\",\n  \"email\": \"trainer@gympro.com\",\n  \"phone\": \"9123456789\",\n  \"specialization\": \"Cardio\",\n  \"experienceYears\": 6,\n  \"status\": \"ACTIVE\",\n  \"sessionFee\": 600.0\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Trainer (Admin)",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "X-User-Role",
+                "value": "ADMIN",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/trainers/{{trainerId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "trainers",
+                "{{trainerId}}"
+              ]
+            },
+            "description": ""
+          },
+          "response": []
+        },
+        {
+          "name": "Update Session Fee (Trainer/Admin)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "X-User-Role",
+                "value": "TRAINER",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/trainers/{{trainerId}}/session-fee",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "trainers",
+                "{{trainerId}}",
+                "session-fee"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"sessionFee\": 550.0\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Add Schedule Slot (Trainer/Admin)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-User-Role",
+                "value": "TRAINER",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/trainers/schedule",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "trainers",
+                "schedule"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"trainerId\": 1,\n  \"dayOfWeek\": \"MON\",\n  \"startTime\": \"09:00\",\n  \"endTime\": \"11:00\",\n  \"available\": true\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Trainer Schedule",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/trainers/{{trainerId}}/schedule",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "trainers",
+                "{{trainerId}}",
+                "schedule"
+              ]
+            },
+            "description": ""
+          },
+          "response": []
+        },
+        {
+          "name": "Get Available Slots",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/trainers/{{trainerId}}/available-slots",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "trainers",
+                "{{trainerId}}",
+                "available-slots"
+              ]
+            },
+            "description": ""
+          },
+          "response": []
+        },
+        {
+          "name": "Mark Slot Booked",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/trainers/schedule/{{scheduleId}}/book",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "trainers",
+                "schedule",
+                "{{scheduleId}}",
+                "book"
+              ]
+            },
+            "description": ""
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Schedule Slot (Trainer/Admin)",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "X-User-Role",
+                "value": "TRAINER",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/trainers/schedule/{{scheduleId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "trainers",
+                "schedule",
+                "{{scheduleId}}"
+              ]
+            },
+            "description": "Only allowed if the slot has not been booked."
+          },
+          "response": []
+        },
+        {
+          "name": "Health Check",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/trainers/test",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "trainers",
+                "test"
+              ]
+            },
+            "description": ""
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Plans",
+      "item": [
+        {
+          "name": "Create Plan (Admin)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-User-Role",
+                "value": "ADMIN",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/plans",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "plans"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"planName\": \"Gold Quarterly\",\n  \"description\": \"Full access for 3 months\",\n  \"durationType\": \"QUARTERLY\",\n  \"price\": 2499,\n  \"durationDays\": 90,\n  \"active\": true\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get All Plans",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/plans",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "plans"
+              ]
+            },
+            "description": ""
+          },
+          "response": []
+        },
+        {
+          "name": "Get Plan By ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/plans/{{planId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "plans",
+                "{{planId}}"
+              ]
+            },
+            "description": ""
+          },
+          "response": []
+        },
+        {
+          "name": "Update Plan (Admin)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "X-User-Role",
+                "value": "ADMIN",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/plans/{{planId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "plans",
+                "{{planId}}"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"planName\": \"Gold Quarterly\",\n  \"description\": \"Full access for 3 months, now with sauna\",\n  \"durationType\": \"QUARTERLY\",\n  \"price\": 2799,\n  \"durationDays\": 90,\n  \"active\": true\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Deactivate Plan (Admin)",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "X-User-Role",
+                "value": "ADMIN",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/plans/{{planId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "plans",
+                "{{planId}}"
+              ]
+            },
+            "description": ""
+          },
+          "response": []
+        },
+        {
+          "name": "Subscribe To Plan",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/plans/subscribe?memberId={{memberId}}&memberEmail={{memberEmail}}&planId={{planId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "plans",
+                "subscribe"
+              ],
+              "query": [
+                {
+                  "key": "memberId",
+                  "value": "{{memberId}}"
+                },
+                {
+                  "key": "memberEmail",
+                  "value": "{{memberEmail}}"
+                },
+                {
+                  "key": "planId",
+                  "value": "{{planId}}"
+                }
+              ]
+            },
+            "description": ""
+          },
+          "response": []
+        },
+        {
+          "name": "Get My Subscriptions",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/plans/my/{{memberId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "plans",
+                "my",
+                "{{memberId}}"
+              ]
+            },
+            "description": ""
+          },
+          "response": []
+        },
+        {
+          "name": "Check Free Session Eligibility",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/plans/free-session-check/{{memberId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "plans",
+                "free-session-check",
+                "{{memberId}}"
+              ]
+            },
+            "description": "Returns eligibility without consuming a session."
+          },
+          "response": []
+        },
+        {
+          "name": "Use Included Free Session",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/plans/use-session/{{memberId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "plans",
+                "use-session",
+                "{{memberId}}"
+              ]
+            },
+            "description": "Atomically consumes one free session."
+          },
+          "response": []
+        },
+        {
+          "name": "Restore Free Session",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/plans/restore-session/{{memberId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "plans",
+                "restore-session",
+                "{{memberId}}"
+              ]
+            },
+            "description": "Rolls back a consumed session, e.g. after a booking is cancelled."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Free Session Usage",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/plans/free-session-usage/{{memberId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "plans",
+                "free-session-usage",
+                "{{memberId}}"
+              ]
+            },
+            "description": ""
+          },
+          "response": []
+        },
+        {
+          "name": "Cancel Subscription",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/plans/subscription/{{subscriptionId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "plans",
+                "subscription",
+                "{{subscriptionId}}"
+              ]
+            },
+            "description": ""
+          },
+          "response": []
+        },
+        {
+          "name": "Health Check",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/plans/test",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "plans",
+                "test"
+              ]
+            },
+            "description": ""
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Bookings",
+      "item": [
+        {
+          "name": "Create Booking",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/bookings/create",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "bookings",
+                "create"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"memberId\": 1,\n  \"memberEmail\": \"member@gympro.com\",\n  \"trainerId\": 1,\n  \"trainerEmail\": \"trainer@gympro.com\",\n  \"scheduleId\": 1,\n  \"sessionDay\": \"MON\",\n  \"sessionTime\": \"09:00-11:00\",\n  \"sessionDate\": \"2026-07-20\",\n  \"notes\": \"First session\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Booking By ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/bookings/{{bookingId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "bookings",
+                "{{bookingId}}"
+              ]
+            },
+            "description": ""
+          },
+          "response": []
+        },
+        {
+          "name": "Get Bookings By Member",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/bookings/member/{{memberId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "bookings",
+                "member",
+                "{{memberId}}"
+              ]
+            },
+            "description": ""
+          },
+          "response": []
+        },
+        {
+          "name": "Get Bookings By Trainer",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/bookings/trainer/{{trainerId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "bookings",
+                "trainer",
+                "{{trainerId}}"
+              ]
+            },
+            "description": ""
+          },
+          "response": []
+        },
+        {
+          "name": "Cancel Booking",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/bookings/cancel/{{bookingId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "bookings",
+                "cancel",
+                "{{bookingId}}"
+              ]
+            },
+            "description": ""
+          },
+          "response": []
+        },
+        {
+          "name": "Complete Booking (Trainer/Admin)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-User-Role",
+                "value": "TRAINER",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/bookings/complete/{{bookingId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "bookings",
+                "complete",
+                "{{bookingId}}"
+              ]
+            },
+            "description": ""
+          },
+          "response": []
+        },
+        {
+          "name": "Confirm Payment",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/bookings/{{bookingId}}/confirm-payment",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "bookings",
+                "{{bookingId}}",
+                "confirm-payment"
+              ]
+            },
+            "description": "Marks a PAID booking's paymentStatus=COMPLETED after a successful payment."
+          },
+          "response": []
+        },
+        {
+          "name": "Health Check",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/bookings/test",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "bookings",
+                "test"
+              ]
+            },
+            "description": ""
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Payments",
+      "item": [
+        {
+          "name": "Create Razorpay Order",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/payments/create-order?amount=999.0&description=Booking #5",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "payments",
+                "create-order"
+              ],
+              "query": [
+                {
+                  "key": "amount",
+                  "value": "999.0"
+                },
+                {
+                  "key": "description",
+                  "value": "Booking #5"
+                }
+              ]
+            },
+            "description": "Call before showing the Razorpay widget. Returns orderId + amount in paise."
+          },
+          "response": []
+        },
+        {
+          "name": "Pay - Dummy (UPI/CASH/QR)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/payments/pay",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "payments",
+                "pay"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"memberId\": 1,\n  \"memberEmail\": \"member@gympro.com\",\n  \"bookingId\": 1,\n  \"subscriptionId\": null,\n  \"amount\": 999.0,\n  \"paymentMethod\": \"UPI\",\n  \"description\": \"Booking #5 - Ravi Trainer\",\n  \"paymentType\": \"REGULAR\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Pay - Razorpay",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/payments/pay",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "payments",
+                "pay"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"memberId\": 1,\n  \"memberEmail\": \"member@gympro.com\",\n  \"bookingId\": 1,\n  \"subscriptionId\": null,\n  \"amount\": 999.0,\n  \"paymentMethod\": \"RAZORPAY\",\n  \"description\": \"Booking #5 - Ravi Trainer\",\n  \"paymentType\": \"REGULAR\",\n  \"razorpayOrderId\": \"order_ABC123\",\n  \"razorpayPaymentId\": \"pay_XYZ789\",\n  \"razorpaySignature\": \"generated_hmac_signature\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Pay - Free Session",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/payments/pay",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "payments",
+                "pay"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"memberId\": 1,\n  \"memberEmail\": \"member@gympro.com\",\n  \"bookingId\": 1,\n  \"amount\": 0.0,\n  \"paymentMethod\": \"FREE\",\n  \"description\": \"Free session included in plan\",\n  \"paymentType\": \"FREE_SESSION\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get My Payments",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/payments/my/{{memberId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "payments",
+                "my",
+                "{{memberId}}"
+              ]
+            },
+            "description": ""
+          },
+          "response": []
+        },
+        {
+          "name": "Get Payment By ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/payments/{{paymentId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "payments",
+                "{{paymentId}}"
+              ]
+            },
+            "description": ""
+          },
+          "response": []
+        },
+        {
+          "name": "Get Payment By Transaction ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/payments/txn/pay_ABC123",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "payments",
+                "txn",
+                "pay_ABC123"
+              ]
+            },
+            "description": ""
+          },
+          "response": []
+        },
+        {
+          "name": "Get Payment By Booking ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/payments/booking/{{bookingId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "payments",
+                "booking",
+                "{{bookingId}}"
+              ]
+            },
+            "description": ""
+          },
+          "response": []
+        },
+        {
+          "name": "Get All Payments (Admin)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-User-Role",
+                "value": "ADMIN",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/payments/all",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "payments",
+                "all"
+              ]
+            },
+            "description": ""
+          },
+          "response": []
+        },
+        {
+          "name": "Refund Payment (Admin)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-User-Role",
+                "value": "ADMIN",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/payments/refund/{{paymentId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "payments",
+                "refund",
+                "{{paymentId}}"
+              ]
+            },
+            "description": ""
+          },
+          "response": []
+        },
+        {
+          "name": "Health Check",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/payments/test",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "payments",
+                "test"
+              ]
+            },
+            "description": ""
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Notifications - Email",
+      "item": [
+        {
+          "name": "Send Generic Email",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/notify/send?email=member@gympro.com&subject=Hello&message=This is a test email",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "notify",
+                "send"
+              ],
+              "query": [
+                {
+                  "key": "email",
+                  "value": "member@gympro.com"
+                },
+                {
+                  "key": "subject",
+                  "value": "Hello"
+                },
+                {
+                  "key": "message",
+                  "value": "This is a test email"
+                }
+              ]
+            },
+            "description": ""
+          },
+          "response": []
+        },
+        {
+          "name": "Booking Confirmation - Member",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/notify/booking/member?to=member@gympro.com&bookingId=1&trainerName=Ravi&day=MON&time=09:00-11:00",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "notify",
+                "booking",
+                "member"
+              ],
+              "query": [
+                {
+                  "key": "to",
+                  "value": "member@gympro.com"
+                },
+                {
+                  "key": "bookingId",
+                  "value": "1"
+                },
+                {
+                  "key": "trainerName",
+                  "value": "Ravi"
+                },
+                {
+                  "key": "day",
+                  "value": "MON"
+                },
+                {
+                  "key": "time",
+                  "value": "09:00-11:00"
+                }
+              ]
+            },
+            "description": ""
+          },
+          "response": []
+        },
+        {
+          "name": "Booking Notification - Trainer",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/notify/booking/trainer?to=trainer@gympro.com&bookingId=1&memberName=Test Member&day=MON&time=09:00-11:00",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "notify",
+                "booking",
+                "trainer"
+              ],
+              "query": [
+                {
+                  "key": "to",
+                  "value": "trainer@gympro.com"
+                },
+                {
+                  "key": "bookingId",
+                  "value": "1"
+                },
+                {
+                  "key": "memberName",
+                  "value": "Test Member"
+                },
+                {
+                  "key": "day",
+                  "value": "MON"
+                },
+                {
+                  "key": "time",
+                  "value": "09:00-11:00"
+                }
+              ]
+            },
+            "description": ""
+          },
+          "response": []
+        },
+        {
+          "name": "Booking Cancellation Email",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/notify/booking/cancel?to=member@gympro.com&bookingId=1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "notify",
+                "booking",
+                "cancel"
+              ],
+              "query": [
+                {
+                  "key": "to",
+                  "value": "member@gympro.com"
+                },
+                {
+                  "key": "bookingId",
+                  "value": "1"
+                }
+              ]
+            },
+            "description": ""
+          },
+          "response": []
+        },
+        {
+          "name": "Payment Receipt Email",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/notify/payment/receipt?to=member@gympro.com&amount=999.0&method=UPI&txnId=pay_ABC123&description=Booking #5",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "notify",
+                "payment",
+                "receipt"
+              ],
+              "query": [
+                {
+                  "key": "to",
+                  "value": "member@gympro.com"
+                },
+                {
+                  "key": "amount",
+                  "value": "999.0"
+                },
+                {
+                  "key": "method",
+                  "value": "UPI"
+                },
+                {
+                  "key": "txnId",
+                  "value": "pay_ABC123"
+                },
+                {
+                  "key": "description",
+                  "value": "Booking #5"
+                }
+              ]
+            },
+            "description": ""
+          },
+          "response": []
+        },
+        {
+          "name": "Payment Refund Email",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/notify/payment/refund?to=member@gympro.com&amount=999.0&txnId=pay_ABC123",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "notify",
+                "payment",
+                "refund"
+              ],
+              "query": [
+                {
+                  "key": "to",
+                  "value": "member@gympro.com"
+                },
+                {
+                  "key": "amount",
+                  "value": "999.0"
+                },
+                {
+                  "key": "txnId",
+                  "value": "pay_ABC123"
+                }
+              ]
+            },
+            "description": ""
+          },
+          "response": []
+        },
+        {
+          "name": "Plan Subscription Email",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/notify/plan/subscribed?to=member@gympro.com&planName=Gold Quarterly&startDate=2026-07-17&endDate=2026-10-15",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "notify",
+                "plan",
+                "subscribed"
+              ],
+              "query": [
+                {
+                  "key": "to",
+                  "value": "member@gympro.com"
+                },
+                {
+                  "key": "planName",
+                  "value": "Gold Quarterly"
+                },
+                {
+                  "key": "startDate",
+                  "value": "2026-07-17"
+                },
+                {
+                  "key": "endDate",
+                  "value": "2026-10-15"
+                }
+              ]
+            },
+            "description": ""
+          },
+          "response": []
+        },
+        {
+          "name": "Send OTP Email",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/notify/otp?to=member@gympro.com&otp=123456",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "notify",
+                "otp"
+              ],
+              "query": [
+                {
+                  "key": "to",
+                  "value": "member@gympro.com"
+                },
+                {
+                  "key": "otp",
+                  "value": "123456"
+                }
+              ]
+            },
+            "description": ""
+          },
+          "response": []
+        },
+        {
+          "name": "Health Check",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/notify/test",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "notify",
+                "test"
+              ]
+            },
+            "description": ""
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Notifications - In-App",
+      "item": [
+        {
+          "name": "Get Paginated Notifications",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/notify/inapp/{{userId}}?page=0&size=20",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "notify",
+                "inapp",
+                "{{userId}}"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "0"
+                },
+                {
+                  "key": "size",
+                  "value": "20"
+                }
+              ]
+            },
+            "description": ""
+          },
+          "response": []
+        },
+        {
+          "name": "Get All Notifications",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/notify/inapp/{{userId}}/all",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "notify",
+                "inapp",
+                "{{userId}}",
+                "all"
+              ]
+            },
+            "description": ""
+          },
+          "response": []
+        },
+        {
+          "name": "Get Unread Count",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/notify/inapp/{{userId}}/unread-count",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "notify",
+                "inapp",
+                "{{userId}}",
+                "unread-count"
+              ]
+            },
+            "description": ""
+          },
+          "response": []
+        },
+        {
+          "name": "Mark Notification As Read",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/notify/inapp/{{notificationId}}/read",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "notify",
+                "inapp",
+                "{{notificationId}}",
+                "read"
+              ]
+            },
+            "description": ""
+          },
+          "response": []
+        },
+        {
+          "name": "Mark All As Read",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/notify/inapp/{{userId}}/read-all",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "notify",
+                "inapp",
+                "{{userId}}",
+                "read-all"
+              ]
+            },
+            "description": ""
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Notification",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/notify/inapp/{{notificationId}}/{{userId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "notify",
+                "inapp",
+                "{{notificationId}}",
+                "{{userId}}"
+              ]
+            },
+            "description": ""
+          },
+          "response": []
+        },
+        {
+          "name": "Clear All Notifications",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/notify/inapp/{{userId}}/clear",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "notify",
+                "inapp",
+                "{{userId}}",
+                "clear"
+              ]
+            },
+            "description": ""
+          },
+          "response": []
+        },
+        {
+          "name": "Subscribe To Notification Stream (SSE)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/notify/inapp/{{userId}}/stream?token={{token}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "notify",
+                "inapp",
+                "{{userId}}",
+                "stream"
+              ],
+              "query": [
+                {
+                  "key": "token",
+                  "value": "{{token}}"
+                }
+              ]
+            },
+            "description": "Server-Sent Events stream. Postman can show raw SSE output in the response. Browsers use EventSource and pass the JWT via ?token= since custom headers aren't supported."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Chatbot",
+      "item": [
+        {
+          "name": "Chat",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/chatbot/chat",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "chatbot",
+                "chat"
+              ]
+            },
+            "description": "Fully public \u2014 no JWT required. Gemini 2.5 Flash powered. conversationId=null starts a new conversation.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"message\": \"How do I book a session with a trainer?\",\n  \"role\": \"MEMBER\",\n  \"conversationId\": null\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Clear Conversation",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/chatbot/conversation/{{conversationId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "chatbot",
+                "conversation",
+                "{{conversationId}}"
+              ]
+            },
+            "description": "",
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Health Check",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/chatbot/health",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "chatbot",
+                "health"
+              ]
+            },
+            "description": "",
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}
