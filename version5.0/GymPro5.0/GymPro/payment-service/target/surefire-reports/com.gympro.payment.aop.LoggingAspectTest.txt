@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: com.gympro.payment.aop.LoggingAspectTest
+-------------------------------------------------------------------------------
+Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 4.583 s -- in com.gympro.payment.aop.LoggingAspectTest

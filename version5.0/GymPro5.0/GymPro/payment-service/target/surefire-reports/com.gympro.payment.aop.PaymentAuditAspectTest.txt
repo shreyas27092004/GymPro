@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: com.gympro.payment.aop.PaymentAuditAspectTest
+-------------------------------------------------------------------------------
+Tests run: 7, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.069 s -- in com.gympro.payment.aop.PaymentAuditAspectTest
